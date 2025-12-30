@@ -12,15 +12,19 @@ set(MX_Defines_Syms
 # STM32CubeMX generated include paths
 set(MX_Include_Dirs
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../GNSS/Target
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32U5xx_HAL_Driver/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32U5xx_HAL_Driver/Inc/Legacy
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/BSP/STM32U5xx_Nucleo
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/CMSIS/Device/ST/STM32U5xx/Include
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/CMSIS/Include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/ST/lib_gnss/LibGNSS/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/ST/lib_gnss/LibNMEA/Inc
 )
 
 # STM32CubeMX generated application sources
 set(MX_Application_Src
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../GNSS/Target/gnss_lib_config.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/main.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/stm32u5xx_it.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Core/Src/stm32u5xx_hal_msp.c
@@ -61,6 +65,11 @@ set(STM32_Drivers_Src
 # Drivers Midllewares
 
 
+set(lib_gnss_Src
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/ST/lib_gnss/LibNMEA/Src/NMEA_parser.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/ST/lib_gnss/LibGNSS/Src/gnss_parser.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/ST/lib_gnss/LibGNSS/Src/gnss_data.c
+)
 
 # Link directories setup
 set(MX_LINK_DIRS
@@ -70,7 +79,7 @@ set(MX_LINK_DIRS
 set(MX_LINK_LIBS 
     STM32_Drivers
     ${TOOLCHAIN_LINK_LIBRARIES}
-    
+    lib_gnss	
 )
 # Interface library for includes and symbols
 add_library(stm32cubemx INTERFACE)
@@ -82,6 +91,11 @@ add_library(STM32_Drivers OBJECT)
 target_sources(STM32_Drivers PRIVATE ${STM32_Drivers_Src})
 target_link_libraries(STM32_Drivers PUBLIC stm32cubemx)
 
+
+# Create lib_gnss static library
+add_library(lib_gnss OBJECT)
+target_sources(lib_gnss PRIVATE ${lib_gnss_Src})
+target_link_libraries(lib_gnss PUBLIC stm32cubemx)
 
 # Add STM32CubeMX generated application sources to the project
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE ${MX_Application_Src})

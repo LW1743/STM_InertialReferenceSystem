@@ -19,12 +19,9 @@ static uint8_t whoamI, rst;
 
 /* Private functions ---------------------------------------------------------*/
 
-static int32_t platform_write(void *handle, uint8_t reg, const uint8_t *bufp,
-                              uint16_t len);
-static int32_t platform_read(void *handle, uint8_t reg, uint8_t *bufp,
-                             uint16_t len);
+static int32_t platform_write(void *handle, uint8_t reg, const uint8_t *bufp, uint16_t len);
+static int32_t platform_read(void *handle, uint8_t reg, uint8_t *bufp, uint16_t len);
 static void platform_delay(uint32_t ms);
-
 
 void setupMag(I2C_HandleTypeDef *hi2c) {
 

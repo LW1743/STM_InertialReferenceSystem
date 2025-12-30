@@ -62,6 +62,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/STMEMS/Inc/lsm6dsv16x_reg.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/STMEMS/Inc/lis2mdl_reg.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/STMEMS/Inc/lps22df_reg.c
 )
 
 # Add include paths

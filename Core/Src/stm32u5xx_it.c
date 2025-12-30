@@ -55,8 +55,8 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern TIM_HandleTypeDef htim1;
 extern UART_HandleTypeDef huart1;
+extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim17;
 
 /* USER CODE BEGIN EV */
