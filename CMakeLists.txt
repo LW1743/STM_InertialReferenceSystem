@@ -45,6 +45,8 @@ add_executable(${CMAKE_PROJECT_NAME}
         Core/Src/Math/quaternion.c
         Core/Src/Baro/Baro_DataPolling.h
         Core/Src/Baro/Baro_DataPolling.c
+        Core/Src/GNSS/GNSS_DataPolling.c
+        Core/Src/GNSS/GNSS_DataPolling.h
 )
 
 # Add STM32CubeMX generated sources

@@ -22,6 +22,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
+
+#include "GNSS/GNSS_DataPolling.h"
 #include "IMU/IMU_PreProcessing.h"
 #include "Mag/Mag_DataPolling.h"
 /* USER CODE END Includes */
@@ -33,7 +35,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -47,18 +48,23 @@ I2C_HandleTypeDef hi2c1;
 
 UART_HandleTypeDef hlpuart1;
 UART_HandleTypeDef huart1;
+DMA_NodeTypeDef Node_GPDMA1_Channel0;
+DMA_QListTypeDef List_GPDMA1_Channel0;
+DMA_HandleTypeDef handle_GPDMA1_Channel0;
 
 TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN PV */
-  uint8_t tim1test=0;
-  Vector3D magVec;
+  static Vector3D magVec;
+  static Vector3D GNSS_position;
+  static uint8_t GNSS_IsAligned;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void SystemPower_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_GPDMA1_Init(void);
 static void MX_ICACHE_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_I2C1_Init(void);
@@ -70,13 +76,6 @@ static void MX_LPUART1_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void getI2C() {
-  for (uint8_t i = 0; i<128; i++) {
-    uint8_t ret;
-    HAL_I2C_Mem_Read(&hi2c1, i<<1, 0x4FU, I2C_MEMADD_SIZE_8BIT, &ret, 1, 1000);
-    printf("i: 0x%x ret: 0x%x \n", i<<1, ret);
-  }
-}
 /* USER CODE END 0 */
 
 /**
@@ -111,6 +110,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_GPDMA1_Init();
   MX_ICACHE_Init();
   MX_USART1_UART_Init();
   MX_I2C1_Init();
@@ -118,8 +118,7 @@ int main(void)
   MX_LPUART1_UART_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim1);
-  setupMag(&hi2c1);
-  //getI2C();
+  GNSS_setup(&hlpuart1);
   /* USER CODE END 2 */
 
   /* Initialize leds */
@@ -134,13 +133,16 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    Mag_readDataPolling();
-    getMagData(&magVec);
-
-    printf("Mag: x: %f y: %f z:%f \n", magVec.x, magVec.y, magVec.z);
+    if (GNSS_IsAligned == 1) {
+      GNSS_getData(&GNSS_position);
+      printf("Lat: %f Lon: %f Alt: %f \n", GNSS_position.x, GNSS_position.y, GNSS_position.z);
+    }
+    else {
+      GNSS_IsAligned = GNSS_getStatus();
+      printf("GNSS_Status: %d\n", GNSS_IsAligned);
+    }
     HAL_Delay(100);
     /* USER CODE END WHILE */
-
     /* USER CODE BEGIN 3 */
 
   }
@@ -214,6 +216,34 @@ static void SystemPower_Config(void)
   }
 /* USER CODE BEGIN PWR */
 /* USER CODE END PWR */
+}
+
+/**
+  * @brief GPDMA1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_GPDMA1_Init(void)
+{
+
+  /* USER CODE BEGIN GPDMA1_Init 0 */
+
+  /* USER CODE END GPDMA1_Init 0 */
+
+  /* Peripheral clock enable */
+  __HAL_RCC_GPDMA1_CLK_ENABLE();
+
+  /* GPDMA1 interrupt Init */
+    HAL_NVIC_SetPriority(GPDMA1_Channel0_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(GPDMA1_Channel0_IRQn);
+
+  /* USER CODE BEGIN GPDMA1_Init 1 */
+
+  /* USER CODE END GPDMA1_Init 1 */
+  /* USER CODE BEGIN GPDMA1_Init 2 */
+
+  /* USER CODE END GPDMA1_Init 2 */
+
 }
 
 /**
@@ -312,7 +342,7 @@ static void MX_LPUART1_UART_Init(void)
 
   /* USER CODE END LPUART1_Init 1 */
   hlpuart1.Instance = LPUART1;
-  hlpuart1.Init.BaudRate = 209700;
+  hlpuart1.Init.BaudRate = 115200;
   hlpuart1.Init.WordLength = UART_WORDLENGTH_8B;
   hlpuart1.Init.StopBits = UART_STOPBITS_1;
   hlpuart1.Init.Parity = UART_PARITY_NONE;

@@ -16,7 +16,7 @@ static int32_t platform_read(void *handle, uint8_t reg, uint8_t *bufp, uint16_t 
 static void platform_delay(uint32_t ms);
 
 //Magic functions from example
-void setupBaroDataPolling(I2C_HandleTypeDef *hi2c) {
+void Baro_setup(I2C_HandleTypeDef *hi2c) {
   lps22df_pin_int_route_t int_route;
   lps22df_bus_mode_t bus_mode;
   lps22df_id_t id;

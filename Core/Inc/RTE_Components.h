@@ -23,6 +23,7 @@
 
 /* Defines ------------------------------------------------------------------*/
 /* STMicroelectronics.X-CUBE-GNSS1.7.1.0 */
+#define TESEO_LIV3F
 #define LIB_GNSS
 #define LIB_NMEA
 #define LIB_GNSS_INTERFACE

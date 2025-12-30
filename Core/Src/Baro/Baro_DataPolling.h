@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include "lps22df_reg.h"
 
-void setupBaroDataPolling(I2C_HandleTypeDef *hi2c);
+void Baro_setup(I2C_HandleTypeDef *hi2c);
 
 void Baro_readDataPolling(void);
 
