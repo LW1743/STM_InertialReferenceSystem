@@ -1,0 +1,8 @@
+//
+// Created by lukas-wiener on 12/30/25.
+//
+
+#ifndef INERTREFSYS_BARO_DATAPOLLING_H
+#define INERTREFSYS_BARO_DATAPOLLING_H
+
+#endif //INERTREFSYS_BARO_DATAPOLLING_H
