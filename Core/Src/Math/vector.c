@@ -29,8 +29,9 @@ void vector3d_scale(Vector3D *v, double s) {
 
 void vector3d_normalize(Vector3D *v) {
     double vec_length = vector3d_length(*v);
-    v->x = v->x / vec_length;
-    v->y = v->y / vec_length;
-    v->z = v->z / vec_length;
-
+    if (vec_length != 0) {
+        v->x = v->x / vec_length;
+        v->y = v->y / vec_length;
+        v->z = v->z / vec_length;
+    }
 }

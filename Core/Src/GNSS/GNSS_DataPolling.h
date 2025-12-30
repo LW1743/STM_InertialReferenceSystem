@@ -11,11 +11,12 @@
 
 
 typedef enum {
-    GNSS_ALIGN = 1,
-    GNSS_INITIALIZING = 0
+    GNSS_STATUS_OK = 0,
+    GNSS_STATUS_INIT = 1,
+    GNSS_STATUS_ERROR = -1,
 }GNSS_Status;
 
-void GNSS_setup(UART_HandleTypeDef *huart);
+GNSS_Status GNSS_setup(UART_HandleTypeDef *huart);
 void GNSS_getData(Vector3D *v);
 void GNSS_parseData();
 

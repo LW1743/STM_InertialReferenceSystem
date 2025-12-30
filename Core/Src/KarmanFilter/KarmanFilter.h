@@ -1,0 +1,8 @@
+//
+// Created by lukas-wiener on 12/30/25.
+//
+
+#ifndef INERTREFSYS_KARMANFILTER_H
+#define INERTREFSYS_KARMANFILTER_H
+
+#endif //INERTREFSYS_KARMANFILTER_H

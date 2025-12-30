@@ -11,8 +11,13 @@
 #include "lis2mdl_reg.h"
 #include "../Math/vector.h"
 
-void setupMag(I2C_HandleTypeDef *hi2c);
+typedef enum {
+    Mag_STATUS_OK = 0,
+    Mag_STATUS_ERROR = -1,
+}Mag_STATUS;
+
+Mag_STATUS Mag_setup(I2C_HandleTypeDef *hi2c);
 void Mag_readDataPolling(void);
-void getMagData(Vector3D *magVector);
+void Mag_getData(Vector3D *magVector);
 
 #endif //INERTREFSYS_MAG_DATAPOLLING_H

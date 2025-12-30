@@ -13,14 +13,17 @@
 #include <string.h>
 
 
+typedef enum {
+    IMU_STATUS_OK = 0,
+    IMU_STATUS_ERROR = -1,
+}IMU_STATUS;
 
-
-void setupIMUDataPolling(I2C_HandleTypeDef *hi2c);
+IMU_STATUS IMU_setup(I2C_HandleTypeDef *hi2c);
 
 void IMU_readDataPolling(void);
 
-void getAccelerationVector3D(Vector3D* accelerationVector);
+void IMU_getAccelerationVector3D(Vector3D* accelerationVector);
 
-void getAngularVelocityVector3D(Vector3D* angularVelocityVector);
+void IMU_getAngularVelocityVector3D(Vector3D* angularVelocityVector);
 
 #endif //INERTREFSYS_IMU_DATAPOLLING_H

@@ -23,7 +23,7 @@ static int32_t platform_write(void *handle, uint8_t reg, const uint8_t *bufp, ui
 static int32_t platform_read(void *handle, uint8_t reg, uint8_t *bufp, uint16_t len);
 static void platform_delay(uint32_t ms);
 
-void setupMag(I2C_HandleTypeDef *hi2c) {
+Mag_STATUS Mag_setup(I2C_HandleTypeDef *hi2c) {
 
   /* Initialize mems driver interface */
   dev_ctx.write_reg = platform_write;
@@ -39,9 +39,8 @@ void setupMag(I2C_HandleTypeDef *hi2c) {
   lis2mdl_device_id_get(&dev_ctx, &whoamI);
 
   if (whoamI != LIS2MDL_ID){
-    while (1) {
-      printf("LIS2MDL: Device not found whoamI: 0x%x\n", whoamI);
-    }
+      printf("LIS2MDL: Device not found");
+      return Mag_STATUS_ERROR;
   }
 
   /* Restore default configuration */
@@ -53,18 +52,26 @@ void setupMag(I2C_HandleTypeDef *hi2c) {
 
   /* Enable Block Data Update */
   lis2mdl_block_data_update_set(&dev_ctx, PROPERTY_ENABLE);
-  /* Set low power mode */
-  lis2mdl_power_mode_set(&dev_ctx, LIS2MDL_LOW_POWER);
+  /* Set Output Data Rate */
+  lis2mdl_data_rate_set(&dev_ctx, LIS2MDL_ODR_100Hz);
   /* Set / Reset sensor mode */
   lis2mdl_set_rst_mode_set(&dev_ctx, LIS2MDL_SENS_OFF_CANC_EVERY_ODR);
   /* Enable temperature compensation */
   lis2mdl_offset_temp_comp_set(&dev_ctx, PROPERTY_ENABLE);
+  /* Set device in continuous mode */
+  lis2mdl_operating_mode_set(&dev_ctx, LIS2MDL_CONTINUOUS_MODE);
+
+  uint8_t reg;
+
+  while (!reg) {
+    lis2mdl_mag_data_ready_get(&dev_ctx, &reg);
+  }
+
+  return Mag_STATUS_OK;
 }
 
 void Mag_readDataPolling(void) {
   uint8_t reg;
-  /* Set device in single mode */
-  lis2mdl_operating_mode_set(&dev_ctx, LIS2MDL_SINGLE_TRIGGER);
   /* Wait for new available data sample */
   lis2mdl_mag_data_ready_get(&dev_ctx, &reg);
 
@@ -84,7 +91,7 @@ void Mag_readDataPolling(void) {
 
 }
 
-void getMagData(Vector3D *magVector) {
+void Mag_getData(Vector3D *magVector) {
   magVector->x = magnetic_mG[0];
   magVector->y = magnetic_mG[1];
   magVector->z = magnetic_mG[2];

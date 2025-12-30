@@ -10,7 +10,12 @@
 #include <stdio.h>
 #include "lps22df_reg.h"
 
-void Baro_setup(I2C_HandleTypeDef *hi2c);
+typedef enum {
+    Baro_STATUS_OK = 0,
+    Baro_STATUS_ERROR = -1,
+}Baro_STATUS;
+
+Baro_STATUS Baro_setup(I2C_HandleTypeDef *hi2c);
 
 void Baro_readDataPolling(void);
 

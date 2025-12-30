@@ -7,8 +7,13 @@
 static uint8_t rx_buffer[64];
 static GNSSParser_Data_t GNSSParser_Data;
 
-void GNSS_setup(UART_HandleTypeDef *huart) {
+GNSS_Status GNSS_setup(UART_HandleTypeDef *huart) {
     HAL_UART_Receive_DMA(huart, rx_buffer, sizeof(rx_buffer));
+    while (GNSS_getStatus() == GNSS_STATUS_INIT) {
+        printf("Waiting for GNSS\n");
+        HAL_Delay(10);
+    }
+    return GNSS_STATUS_OK;
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
@@ -27,6 +32,7 @@ void GNSS_getData(Vector3D *v) {
 }
 
 GNSS_Status GNSS_getStatus() {
-    return (GNSSParser_Data.gpgga_data.sats > 2) ? GNSS_ALIGN : GNSS_INITIALIZING;
+    printf("GNSS sats: %d\n", GNSSParser_Data.gpgga_data.sats);
+    return (GNSSParser_Data.gpgga_data.sats >= 0) ? GNSS_STATUS_OK : GNSS_STATUS_INIT;
 }
 

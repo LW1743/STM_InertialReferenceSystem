@@ -1,0 +1,8 @@
+//
+// Created by lukas-wiener on 12/30/25.
+//
+
+#ifndef INERTREFSYS_DEADRECKONING_H
+#define INERTREFSYS_DEADRECKONING_H
+
+#endif //INERTREFSYS_DEADRECKONING_H

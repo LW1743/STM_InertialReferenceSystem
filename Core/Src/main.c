@@ -22,10 +22,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
-
-#include "GNSS/GNSS_DataPolling.h"
-#include "IMU/IMU_PreProcessing.h"
-#include "Mag/Mag_DataPolling.h"
+#include "IRS/IRS.h"
+#include "claudeTest.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -55,9 +53,13 @@ DMA_HandleTypeDef handle_GPDMA1_Channel0;
 TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN PV */
-  static Vector3D magVec;
+  static Vector3D accel;
+  static Vector3D mag;
   static Vector3D GNSS_position;
   static uint8_t GNSS_IsAligned;
+static uint32_t currentTime = 0;
+// Get and print current angles every second
+static uint32_t lastPrintTime = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -118,7 +120,10 @@ int main(void)
   MX_LPUART1_UART_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim1);
-  GNSS_setup(&hlpuart1);
+  HAL_Delay(2000);
+  IRS_setup(&hi2c1, &hlpuart1);
+  printf("Calibrating IMU orientation...\n");
+  Orientation_Initialize(currentTime);
   /* USER CODE END 2 */
 
   /* Initialize leds */
@@ -133,16 +138,26 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    if (GNSS_IsAligned == 1) {
-      GNSS_getData(&GNSS_position);
-      printf("Lat: %f Lon: %f Alt: %f \n", GNSS_position.x, GNSS_position.y, GNSS_position.z);
+
+    currentTime = HAL_GetTick();; // HAL_GetTick();
+
+    // Update orientation at regular intervals (e.g., 100 Hz)
+    Orientation_Update(currentTime);
+
+    // Get and print current angles every second
+    if (currentTime - lastPrintTime >= 1000) {
+      double roll, pitch, yaw;
+      Orientation_GetAngles(&roll, &pitch, &yaw);
+
+      printf("Current Orientation:\n");
+      printf("  Roll:  %.2f degrees\n", roll);
+      printf("  Pitch: %.2f degrees\n", pitch);
+      printf("  Yaw:   %.2f degrees\n", yaw);
+
+      lastPrintTime = currentTime;
     }
-    else {
-      GNSS_IsAligned = GNSS_getStatus();
-      printf("GNSS_Status: %d\n", GNSS_IsAligned);
-    }
-    HAL_Delay(100);
     /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
 
   }

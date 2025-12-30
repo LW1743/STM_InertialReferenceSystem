@@ -16,7 +16,7 @@ static int32_t platform_read(void *handle, uint8_t reg, uint8_t *bufp, uint16_t 
 static void platform_delay(uint32_t ms);
 
 //Magic functions from example
-void Baro_setup(I2C_HandleTypeDef *hi2c) {
+Baro_STATUS Baro_setup(I2C_HandleTypeDef *hi2c) {
   lps22df_pin_int_route_t int_route;
   lps22df_bus_mode_t bus_mode;
   lps22df_id_t id;
@@ -31,18 +31,22 @@ void Baro_setup(I2C_HandleTypeDef *hi2c) {
 
   /* Check device ID */
   lps22df_id_get(&dev_ctx, &id);
-  if (id.whoami != LPS22DF_ID)
+  if (id.whoami != LPS22DF_ID) {
     printf("LPS22DF not found!\n");
-
+    return Baro_STATUS_ERROR;
+  }
   /* Boot device */
   ret = lps22df_init_set(&dev_ctx, LPS22DF_BOOT);
-  if (ret != 0)
+  if (ret != 0) {
     printf("LPS22DF not booting!\n");
-
+    return Baro_STATUS_ERROR;
+  }
   /* Reset device */
   ret = lps22df_init_set(&dev_ctx, LPS22DF_RESET);
-  if (ret != 0)
+  if (ret != 0){
     printf("LPS22DF not resetting!\n");
+    return Baro_STATUS_ERROR;
+  }
 
   /* Set bdu and if_inc recommended for driver usage */
   lps22df_init_set(&dev_ctx, LPS22DF_DRV_RDY);
@@ -62,6 +66,8 @@ void Baro_setup(I2C_HandleTypeDef *hi2c) {
   lps22df_pin_int_route_get(&dev_ctx, &int_route);
   int_route.drdy_pres   = PROPERTY_DISABLE;
   lps22df_pin_int_route_set(&dev_ctx, &int_route);
+
+  return Baro_STATUS_OK;
 }
 
 void Baro_readDataPolling(void) {

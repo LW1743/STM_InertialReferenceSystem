@@ -16,3 +16,13 @@ Quaternion4D quaternion4d_conjugate(Quaternion4D q) {
     Quaternion4D res = {q.w, -q.x, -q.y, -q.z};
     return res;
 }
+
+void quaternion4d_normalize(Quaternion4D *q) {
+    double mag_length = sqrt(q->w * q->w + q->x * q->x + q->y * q->y + q->z * q->z);
+    if (mag_length != 0) {
+        q->w /= mag_length;
+        q->x /= mag_length;
+        q->y /= mag_length;
+        q->z /= mag_length;
+    }
+}

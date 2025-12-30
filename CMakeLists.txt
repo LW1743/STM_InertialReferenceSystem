@@ -47,6 +47,12 @@ add_executable(${CMAKE_PROJECT_NAME}
         Core/Src/Baro/Baro_DataPolling.c
         Core/Src/GNSS/GNSS_DataPolling.c
         Core/Src/GNSS/GNSS_DataPolling.h
+        Core/Src/IRS/IRS.c
+        Core/Src/IRS/IRS.h
+        Core/Src/DeadReckoning/DeadReckoning.h
+        Core/Src/DeadReckoning/DeadReckoning.c
+        Core/Src/KarmanFilter/KarmanFilter.h
+        Core/Src/KarmanFilter/KarmanFilter.c
 )
 
 # Add STM32CubeMX generated sources
@@ -84,7 +90,6 @@ list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
 # Add linked libraries
 target_link_libraries(${CMAKE_PROJECT_NAME}
     stm32cubemx
-
     # Add user defined libraries
 )
 

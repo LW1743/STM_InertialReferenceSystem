@@ -22,7 +22,7 @@ static int32_t platform_read(void *handle, uint8_t reg, uint8_t *bufp, uint16_t 
 static void platform_delay(uint32_t ms);
 
 
-void setupIMUDataPolling(I2C_HandleTypeDef *hi2c) {
+IMU_STATUS IMU_setup(I2C_HandleTypeDef *hi2c) {
 
   dev_ctx.write_reg = platform_write;
   dev_ctx.read_reg = platform_read;
@@ -38,6 +38,7 @@ void setupIMUDataPolling(I2C_HandleTypeDef *hi2c) {
 
   if (whoamI != LSM6DSV16X_ID) {
     printf("LSM6DSV16X device not found\n");
+    return IMU_STATUS_ERROR;
   }
 
   /* Restore default configuration */
@@ -54,7 +55,7 @@ void setupIMUDataPolling(I2C_HandleTypeDef *hi2c) {
   lsm6dsv16x_gy_data_rate_set(&dev_ctx, LSM6DSV16X_ODR_AT_7680Hz);
 
   /* Set full scale */
-  lsm6dsv16x_xl_full_scale_set(&dev_ctx, LSM6DSV16X_2g);
+  lsm6dsv16x_xl_full_scale_set(&dev_ctx, LSM6DSV16X_4g);
   lsm6dsv16x_gy_full_scale_set(&dev_ctx, LSM6DSV16X_2000dps);
 
   /* Configure filtering chain */
@@ -68,6 +69,7 @@ void setupIMUDataPolling(I2C_HandleTypeDef *hi2c) {
   lsm6dsv16x_filt_xl_lp2_set(&dev_ctx, PROPERTY_ENABLE);
   lsm6dsv16x_filt_xl_lp2_bandwidth_set(&dev_ctx, LSM6DSV16X_XL_STRONG);
 
+  return IMU_STATUS_OK;
 }
 
 void IMU_readDataPolling(void) {
@@ -111,13 +113,13 @@ void IMU_readDataPolling(void) {
 
 }
 
-void getAccelerationVector3D(Vector3D* accelerationVector) {
+void IMU_getAccelerationVector3D(Vector3D* accelerationVector) {
   accelerationVector->x = acceleration_mg[0];
   accelerationVector->y = acceleration_mg[1];
   accelerationVector->z = acceleration_mg[2];
 }
 
-void getAngularVelocityVector3D(Vector3D* angularVelocityVector) {
+void IMU_getAngularVelocityVector3D(Vector3D* angularVelocityVector) {
   angularVelocityVector->x = angular_rate_mdps[0]*2*M_PI;
   angularVelocityVector->y = angular_rate_mdps[1]*2*M_PI;
   angularVelocityVector->z = angular_rate_mdps[2]*2*M_PI;
@@ -126,13 +128,13 @@ void getAngularVelocityVector3D(Vector3D* angularVelocityVector) {
 
 static int32_t platform_write(void *handle, uint8_t reg, const uint8_t *bufp, uint16_t len)
 {
-  HAL_I2C_Mem_Write(handle, LSM6DSV16X_I2C_ADD_L, reg, I2C_MEMADD_SIZE_8BIT, (uint8_t*) bufp, len, 1000);
+  HAL_I2C_Mem_Write(handle, LSM6DSV16X_I2C_ADD_H, reg, I2C_MEMADD_SIZE_8BIT, (uint8_t*) bufp, len, 1000);
   return 0;
 }
 
 static int32_t platform_read(void *handle, uint8_t reg, uint8_t *bufp, uint16_t len)
 {
-  HAL_I2C_Mem_Read(handle, LSM6DSV16X_I2C_ADD_L, reg, I2C_MEMADD_SIZE_8BIT, bufp, len, 1000);
+  HAL_I2C_Mem_Read(handle, LSM6DSV16X_I2C_ADD_H, reg, I2C_MEMADD_SIZE_8BIT, bufp, len, 1000);
   return 0;
 }
 
