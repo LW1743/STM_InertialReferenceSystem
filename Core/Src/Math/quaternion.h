@@ -15,5 +15,7 @@ Quaternion4D quaternion4d_multiply(Quaternion4D q1, Quaternion4D q2);
 
 Quaternion4D quaternion4d_conjugate(Quaternion4D q);
 
+
+
 void quaternion4d_normalize(Quaternion4D *q);
 #endif //INERTREFSYS_QUATERNION_H

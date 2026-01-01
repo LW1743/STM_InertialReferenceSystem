@@ -23,7 +23,6 @@
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 #include "IRS/IRS.h"
-#include "claudeTest.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -78,6 +77,12 @@ static void MX_LPUART1_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void printAcceleration(void) {
+  IMU_readDataPolling();
+  IMU_getAccelerationVector3D(&accel);
+
+  printf("Acceleration: x: %f y: %f z: %f\n", accel.x, accel.y, accel.z);
+}
 /* USER CODE END 0 */
 
 /**
@@ -122,8 +127,6 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim1);
   HAL_Delay(2000);
   IRS_setup(&hi2c1, &hlpuart1);
-  printf("Calibrating IMU orientation...\n");
-  Orientation_Initialize(currentTime);
   /* USER CODE END 2 */
 
   /* Initialize leds */
@@ -139,23 +142,6 @@ int main(void)
   while (1)
   {
 
-    currentTime = HAL_GetTick();; // HAL_GetTick();
-
-    // Update orientation at regular intervals (e.g., 100 Hz)
-    Orientation_Update(currentTime);
-
-    // Get and print current angles every second
-    if (currentTime - lastPrintTime >= 1000) {
-      double roll, pitch, yaw;
-      Orientation_GetAngles(&roll, &pitch, &yaw);
-
-      printf("Current Orientation:\n");
-      printf("  Roll:  %.2f degrees\n", roll);
-      printf("  Pitch: %.2f degrees\n", pitch);
-      printf("  Yaw:   %.2f degrees\n", yaw);
-
-      lastPrintTime = currentTime;
-    }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

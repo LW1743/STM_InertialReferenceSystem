@@ -53,6 +53,8 @@ add_executable(${CMAKE_PROJECT_NAME}
         Core/Src/DeadReckoning/DeadReckoning.c
         Core/Src/KarmanFilter/KarmanFilter.h
         Core/Src/KarmanFilter/KarmanFilter.c
+        Core/Src/Math/matrix.h
+        Core/Src/Math/matrix.c
 )
 
 # Add STM32CubeMX generated sources
